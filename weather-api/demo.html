@@ -1,0 +1,46 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Weather API</title>
+</head>
+<body style="display: flex; flex-direction: column; align-items: center;">
+    <input id="city" placeholder="Please enter city..." type="text" />
+    <button id="button" style="margin-top: 20px;">Get Weather</button>
+    <div id="weather" style="font-size: 20px; margin-top: 30px;"></div>
+    <script>
+    const button = document.getElementById('button');
+    button.addEventListener('click', function () {
+        const cityInput = document.getElementById('city');
+        const city = cityInput.value;
+
+        const promise1 = fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&APPID=e77ac07b68492192942c1d7e7159e3c9`)
+            .then(response => response.json())
+            // .then(data => {
+            //     return new Promise((resolve, reject) => {
+            //         setTimeout(() => resolve(data), 40);
+            //     });
+            // });
+        const promise2 = fetch(`https://api.apixu.com/v1/current.json?key=55299a3f81ec4e78917192849191102&q=${city}`)
+            .then(response => response.json());
+
+        Promise.race([promise1, promise2])
+            .then(data => {
+                let source;
+                let temperature;
+                if (data.main !== undefined && data.main.temp !== undefined) {
+                    temperature = Math.floor(data.main.temp - 273);
+                    source = 'OpenWeatherMap'
+                } else if (data.current !== undefined && data.current.temp_c !== undefined) {
+                    temperature = data.current.temp_c;
+                    source = 'apixu'
+                }
+                const resultsDiv = document.getElementById('weather');
+                resultsDiv.innerHTML = 'Current temperature is ' + temperature + ' degrees Celsius. Source: ' + source;
+            })
+    });
+    </script>
+</body>
+</html>

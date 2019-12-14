@@ -11,9 +11,9 @@ function getUsers() {
     return new Promise(function (resolve, reject) {
         connection.query('SELECT * FROM users', function (error, results, fields) {
             if (error) {
-                reject(error);
+                return reject(error);
             }
-            resolve(results);
+            return resolve(results);
         });
     });
 }
